@@ -1,12 +1,19 @@
-from openai import OpenAI
 import os
+from openai import OpenAI
 from dotenv import load_dotenv
 from config import attacker_profiles
 from utils import sanitize_input, display_ethical_warning
 
-# Initialize OpenAI client
+# Load .env and get the OpenAI key
 load_dotenv()
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+api_key = os.getenv("OPENAI_API_KEY")
+
+# Validate the key
+if not api_key:
+    raise ValueError("❌ OPENAI_API_KEY is missing. Please check your .env file.")
+
+# Initialize OpenAI client
+client = OpenAI(api_key=api_key)
 
 def generate_response(prompt, tactic="osint_gatherer"):
     try:
@@ -26,12 +33,13 @@ def generate_response(prompt, tactic="osint_gatherer"):
 
 def main():
     display_ethical_warning()
-    print("🔴 Red Team Simulator - Type 'exit' to quit\n")
+    print("\n🔴 Red Team Simulator - Type 'exit' to quit\n")
     
     while True:
         try:
             user_input = input("You: ")
-            if user_input.lower() == "exit":
+            if user_input.strip().lower() == "exit":
+                print("👋 Exiting Red Team Simulator.")
                 break
             
             clean_input = sanitize_input(user_input)
@@ -39,9 +47,9 @@ def main():
             
             response = generate_response(clean_input, tactic)
             print(f"\nAttacker: {response}\n")
-            
+        
         except KeyboardInterrupt:
-            print("\n🛑 Session terminated")
+            print("\n🛑 Session interrupted by user.")
             break
 
 if __name__ == "__main__":
