@@ -1,16 +1,12 @@
-# Secrets
-.env
-*.key
+# .gitignore
 
-# Python
+# Ignore environment variable file containing API key
+.env
+
+# Ignore Python cache and build files
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-
-# Logs
-*.log
-
-# IDE
-.vscode/
-.idea/
+*.egg-info/
+.ipynb_checkpoints/
+dist/
+build/
