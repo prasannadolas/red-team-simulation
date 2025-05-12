@@ -59,14 +59,16 @@ The chatbot auto-selects the attacker type based on input keywords (`phish`, `em
 ## 📁 Project Structure
 
 ```
-.
+
 ├── main.py              # Entry point for the chatbot
 ├── config.py            # Attacker profiles and prompts
 ├── utils.py             # Input sanitization and helpers
-├── .env                 # Your OpenAI API key
+├── .env                 # Your Gemini API key
 ├── requirements.txt     # Python dependencies
-└── README.md
-```
+├── README.md            # Project description
+├── templates/           # Flask will look here for HTML files
+│___ └── index.html       # Frontend interface for the chatbot
+
 
 ---
 
