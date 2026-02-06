@@ -39,18 +39,20 @@ The project is structured to ensure separation of concerns between AI logic, saf
 
 ```text
 RED-TEAM-SIMULATION/
-[cite_start]├── __pycache__/                # Python bytecode cache files [cite: 1]
-├── labs-projects/              # Directory for experimental lab work or sub-projects
-├── research-paper-presentation/# Documentation, slides, and research paper drafts
+├── __pycache__/                # Python bytecode cache files [cite: 1]
+├── labs-projects/              # Directory for experimental lab work or
+sub-projects
+├── research-paper-presentation/# Documentation, slides, and research paper
+drafts
 ├── templates/                  # Frontend HTML assets
 │   └── index.html              # Main UI for the simulator
 ├── .env                        # Environment variables (API keys)
-[cite_start]├── .gitignore                  # Specifies files to be ignored by Git [cite: 1]
+├── .gitignore                  # Specifies files to be ignored by Git
 ├── app.py                      # Flask web server and API routing
 ├── chatbot.py                  # AI orchestration and Gemini client logic
 ├── config.py                   # MITRE ATT&CK profiles and system prompts
 ├── README.md                   # Project documentation and setup guide
-[cite_start]├── requirements.txt            # List of Python dependencies [cite: 2]
+├── requirements.txt            # List of Python dependencies 
 └── utils.py                    # Safety guardrails, PII scrubbing, and sanitization
 
 ```
