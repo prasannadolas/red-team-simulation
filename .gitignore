@@ -1,12 +1,17 @@
-# .gitignore
-
-# Ignore environment variable file containing API key
+# API Keys and Secrets
 .env
 
-# Ignore Python cache and build files
+# Python Environment & Cache
 __pycache__/
 *.pyc
-*.egg-info/
-.ipynb_checkpoints/
-dist/
-build/
+venv/
+env/
+.venv/
+
+# Logs and Reports
+*.log
+simulation_reports/
+
+# OS Files
+.DS_Store
+Thumbs.db

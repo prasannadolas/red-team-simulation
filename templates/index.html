@@ -3,360 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Red Team Simulation UI</title>
+    <title>Red Team Simulator</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* Global Resets and Font */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            background-color: #111827; /* bg-gray-900 */
-            color: #f3f4f6; /* text-gray-100 */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 1rem; /* p-4 */
-        }
-
-        /* Container Styling */
-        .container {
-            background-color: #1f2937; /* bg-gray-800 */
-            padding: 1.5rem; /* p-6 */
-            border-radius: 0.5rem; /* rounded-lg */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* shadow-xl */
-            width: 100%;
-            max-width: 42rem; /* max-w-2xl */
-            border: 1px solid #374151; /* border border-gray-700 */
-        }
-
-        @media (min-width: 640px) { /* sm: */
-            .container {
-                padding: 2rem; /* sm:p-8 */
-            }
-        }
-
-        /* Heading Styling */
-        h1 {
-            font-size: 1.5rem; /* text-2xl */
-            font-weight: 700; /* font-bold */
-            margin-bottom: 1.5rem; /* mb-6 */
-            text-align: center;
-            color: transparent;
-            background-clip: text;
-            -webkit-background-clip: text;
-            background-image: linear-gradient(to right, #60a5fa, #a78bfa); /* from-blue-400 to-purple-500 */
-        }
-
-        @media (min-width: 640px) { /* sm: */
-            h1 {
-                font-size: 1.875rem; /* sm:text-3xl */
-            }
-        }
+        :root { --bg: #0d1117; --card: #161b22; --accent: #58a6ff; --text: #c9d1d9; --border: #30363d; }
+        body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Form Styling */
-        #cmdForm {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem; /* space-y-4 */
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.5rem; /* mb-2 */
-            font-size: 0.875rem; /* text-sm */
-            font-weight: 500; /* font-medium */
-            color: #d1d5db; /* text-gray-300 */
-        }
-
-        input[type="text"] {
-            width: 100%;
-            padding: 0.625rem 1rem; /* px-4 py-2.5 */
-            background-color: #374151; /* bg-gray-700 */
-            border: 1px solid #4b5563; /* border-gray-600 */
-            border-radius: 0.375rem; /* rounded-md */
-            color: #f3f4f6; /* text-gray-100 */
-            transition: border-color 0.2s, box-shadow 0.2s;
-        }
-        input[type="text"]::placeholder {
-            color: #6b7280; /* placeholder-gray-500 */
-        }
-        input[type="text"]:focus {
-            outline: none;
-            border-color: transparent; /* focus:border-transparent */
-            box-shadow: 0 0 0 2px #3b82f6; /* focus:ring-2 focus:ring-blue-500 */
-        }
-
-        button[type="submit"] {
-            width: 100%;
-            padding: 0.75rem 1.25rem; /* px-5 py-3 */
-            background-image: linear-gradient(to right, #3b82f6, #8b5cf6); /* from-blue-500 to-purple-600 */
-            color: white;
-            font-weight: 600; /* font-semibold */
-            border: none;
-            border-radius: 0.375rem; /* rounded-md */
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-md */
-            cursor: pointer;
-            transition: background-image 0.2s, opacity 0.2s;
-        }
-        button[type="submit"]:hover {
-            background-image: linear-gradient(to right, #2563eb, #7c3aed); /* hover:from-blue-600 hover:to-purple-700 */
-        }
-        button[type="submit"]:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px #1f2937, 0 0 0 4px #3b82f6; /* focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-blue-500 */
-        }
-        button[type="submit"]:disabled {
-            opacity: 0.5; /* disabled:opacity-50 */
-            cursor: not-allowed; /* disabled:cursor-not-allowed */
-        }
-
-        /* Output Area Styling */
-        .output-container { 
-            margin-top: 1.5rem;
-        }
+        /* Sidebar Styles */
+        #sidebar { width: 320px; background: var(--card); border-right: 1px solid var(--border); padding: 24px; display: flex; flex-direction: column; }
+        .tactic-btn { width: 100%; padding: 14px; margin-bottom: 12px; background: #21262d; border: 1px solid var(--border); color: white; border-radius: 8px; cursor: pointer; text-align: left; transition: 0.2s; }
+        .tactic-btn:hover { background: #30363d; }
+        .tactic-btn.active { border-color: var(--accent); background: #1f2937; box-shadow: 0 0 10px rgba(88, 166, 255, 0.2); }
         
-        pre#outputArea {
-            background-color: #0f172a; /* bg-slate-900 */
-            border: 1px solid #1e293b; /* border-slate-700 */
-            color: #cbd5e1; /* Default text color (slate-300) */
-            font-size: 0.875rem; /* text-sm */
-            padding: 1rem; /* p-4 */
-            border-radius: 0.375rem; /* rounded-md */
-            height: 16rem; /* h-64 */
-            overflow-y: auto;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace; /* font-mono */
-            white-space: pre-wrap; 
-            word-break: break-words; 
-        }
+        /* Main Simulation Area */
+        #main-content { flex: 1; display: flex; flex-direction: column; padding: 30px; position: relative; }
+        #timeline { flex: 1; overflow-y: auto; padding-right: 15px; display: flex; flex-direction: column; gap: 24px; scroll-behavior: smooth; }
         
-        /* Class to reset to base styles for outputArea, used in JS */
-        .output-base-style {
-            background-color: #0f172a;
-            border: 1px solid #1e293b;
-            color: #cbd5e1; /* Default text color */
-            font-size: 0.875rem;
-            padding: 1rem;
-            border-radius: 0.375rem;
-            height: 16rem;
-            overflow-y: auto;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-            white-space: pre-wrap;
-            word-break: break-words;
-        }
-
-
-        /* Custom scrollbar for the output area (WebKit browsers) */
-        pre::-webkit-scrollbar {
-            width: 8px;
-        }
-        pre::-webkit-scrollbar-track {
-            background: #1e293b; 
-        }
-        pre::-webkit-scrollbar-thumb {
-            background-color: #475569; 
-            border-radius: 4px;
-            border: 2px solid #1e293b; 
-        }
-        /* Custom scrollbar for Firefox */
-        pre {
-            scrollbar-width: thin;
-            scrollbar-color: #475569 #1e293b; 
-        }
-
-        /* Animation for loading dots */
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-        .loading-dot {
-            animation: blink 1.4s infinite both;
-            display: inline-block; 
-        }
-        .loading-dot:nth-child(2) {
-            animation-delay: 0.2s;
-        }
-        .loading-dot:nth-child(3) {
-            animation-delay: 0.4s;
-        }
+        /* Vertical Timeline CSS */
+        .timeline-item { position: relative; padding-left: 40px; border-left: 2px solid var(--border); }
+        .timeline-item::before { content: ''; position: absolute; left: -9px; top: 0; width: 16px; height: 16px; background: var(--accent); border-radius: 50%; border: 4px solid var(--bg); }
         
-        /* Utility classes for text colors */
-        .text-command { color: #facc15; } /* Yellow for command in loading message */
-        .text-error { color: #f87171; } /* Red for errors */
-        .text-success { color: #4ade80; } /* Green for success */
-        .text-warning { color: #facc15; } /* Yellow for warnings or non-zero return codes */
-        .text-muted { color: #9ca3af; } /* Lighter gray for stderr if not critical */
-        .text-default-output { color: #cbd5e1; } /* Default output color */
-
-        .output-separator {
-            border-color: #374151; /* gray-700 */
-            margin-top: 0.5rem;
-            margin-bottom: 0.5rem;
-        }
+        /* Message Formatting */
+        .log-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .tag { display: inline-block; font-size: 0.75rem; font-weight: bold; padding: 4px 8px; border-radius: 4px; margin-bottom: 12px; text-transform: uppercase; }
+        .tag-user { background: #f0883e; color: black; }
+        .tag-bot { background: #238636; color: white; }
+        
+        /* Input Bar */
+        #input-container { margin-top: 25px; display: flex; gap: 12px; background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--border); }
+        input { flex: 1; background: transparent; border: none; color: white; font-size: 1rem; outline: none; }
+        button#send { background: var(--accent); color: black; border: none; padding: 10px 24px; border-radius: 6px; font-weight: 700; cursor: pointer; }
+        
+        /* Markdown Overrides */
+        .bot-output h3 { color: var(--accent); margin-top: 0; }
+        .bot-output ul { padding-left: 20px; }
+        .bot-output code { background: #2d333b; padding: 2px 5px; border-radius: 4px; font-family: monospace; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Red Team Simulation</h1>
+
+    <div id="sidebar">
+        <h2 style="color: var(--accent);">RED TEAM SIMULATOR </h2>
+        <p style="font-size: 0.85rem; color: #8b949e; margin-bottom: 25px;">ATT&CK-Aligned Red Team Orchestrator</p>
         
-        <form id="cmdForm">
-            <div>
-                <label for="cmdInput">Enter Command:</label>
-                <input 
-                    type="text" 
-                    id="cmdInput" 
-                    placeholder="e.g., python3 recon.py --target 10.0.0.5" 
-                    required 
-                />
+        <button class="tactic-btn active" onclick="setTactic('recon_gatherer', this)">
+            <strong>Reconnaissance</strong><br><small>Gather Host Info</small>
+        </button>
+        <button class="tactic-btn" onclick="setTactic('phishing_specialist', this)">
+            <strong>Initial Access</strong><br><small>Phishing Specialist</small>
+        </button>
+        <button class="tactic-btn" onclick="setTactic('execution_simulator', this)">
+            <strong>Execution</strong><br><small>Command Scripts</small>
+        </button>
+    </div>
+
+    <div id="main-content">
+        <div id="timeline">
+            <div class="timeline-item">
+                <div class="log-card">
+                    <span class="tag" style="background: #58a6ff; color: black;">System</span>
+                    <p>Simulator Ready... Choose a tactic and define your objective.</p>
+                </div>
             </div>
-            
-            <button 
-                type="submit" 
-                id="runBtn"
-            >
-                Run Command
-            </button>
-        </form>
-        
-        <div class="output-container"> 
-             <label for="outputArea">Output:</label>
-            <pre id="outputArea" class="output-base-style">Output will appear here...</pre>
+        </div>
+
+        <div id="input-container">
+            <input type="text" id="user-input" placeholder="Describe the simulation step......">
+            <button id="send" onclick="submitQuery()">RUN</button>
         </div>
     </div>
 
     <script>
-        const form = document.getElementById('cmdForm');
-        const cmdInput = document.getElementById('cmdInput');
-        const outputArea = document.getElementById('outputArea');
-        const runBtn = document.getElementById('runBtn');
+        let selectedTactic = 'recon_gatherer';
 
-        // Helper to set output area content and classes
-        function setOutput(htmlContent, ...classes) {
-            outputArea.innerHTML = htmlContent; // Use innerHTML for loading indicator and formatted output
-            outputArea.className = 'output-base-style'; // Reset to base styles first
-            if (classes.length > 0) {
-                outputArea.classList.add(...classes);
-            }
-            outputArea.scrollTop = outputArea.scrollHeight;
-        }
-        
-        // Helper to append content to output area
-        function appendOutput(element) {
-            outputArea.appendChild(element);
-            outputArea.scrollTop = outputArea.scrollHeight;
+        function setTactic(tactic, element) {
+            selectedTactic = tactic;
+            document.querySelectorAll('.tactic-btn').forEach(b => b.classList.remove('active'));
+            element.classList.add('active');
         }
 
+        async function submitQuery() {
+            const inputField = document.getElementById('user-input');
+            const timeline = document.getElementById('timeline');
+            const query = inputField.value.trim();
+            
+            if (!query) return;
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault(); 
-            const command = cmdInput.value.trim(); 
-            if (!command) return; 
-
-            runBtn.disabled = true; 
-            const sanitizedCommand = command.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            setOutput(
-                `Executing command: <span class="text-command">${sanitizedCommand}</span><br><span class="loading-dot">.</span><span class="loading-dot">.</span><span class="loading-dot">.</span>`,
-                'text-default-output' // Default color for loading message
-            );
+            // Add User Entry to Timeline
+            timeline.innerHTML += `
+                <div class="timeline-item">
+                    <div class="log-card">
+                        <span class="tag tag-user">Target Objective</span>
+                        <p>${query}</p>
+                    </div>
+                </div>`;
+            
+            inputField.value = '';
+            timeline.scrollTop = timeline.scrollHeight;
 
             try {
-                const apiUrl = '/api/run'; 
-                const response = await fetch(apiUrl, {
+                const response = await fetch('/api/run', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cmd: command }) 
+                    body: JSON.stringify({ cmd: query, tactic: selectedTactic })
                 });
-
-                let data;
-                try {
-                    data = await response.json();
-                } catch (jsonError) {
-                    // If response.json() fails, the response body might not be JSON.
-                    // We'll try to get text content for more informative error.
-                    const responseText = await response.text().catch(() => "Could not read response body.");
-                    console.error("JSON Parsing Error:", jsonError, "Response Text:", responseText);
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}. Response body: ${responseText}`);
-                    }
-                    // If response was OK but JSON parsing failed, it's an API contract issue.
-                    throw new Error(`API returned OK but response body was not valid JSON. Detail: ${responseText}. Error: ${jsonError.message}`);
-                }
-
-                if (!response.ok) {
-                     // Use error from parsed JSON if available, otherwise use status.
-                     const errorMsg = data.error || `API Error! Status: ${response.status}, Message: ${data.message || 'No specific error message provided.'}`;
-                     throw new Error(errorMsg);
-                }
                 
-                // Clear loading message and set base style before adding new content
-                outputArea.innerHTML = ''; // Clear previous content
-                outputArea.className = 'output-base-style'; // Apply base styling
-
-                let mainOutputText = data.stdout || "";
-                let stderrText = data.stderr || "";
-                const returnCode = data.returncode;
-
-                // Determine overall status color
-                let statusColorClass = 'text-default-output'; // Default
-                if (returnCode === 0 && !stderrText) {
-                    statusColorClass = 'text-success';
-                } else if (returnCode !== 0) {
-                    statusColorClass = 'text-error';
-                } else if (stderrText) { // returnCode is 0 but there's stderr (warnings)
-                    statusColorClass = 'text-warning'; 
-                }
-                outputArea.classList.add(statusColorClass);
-
-
-                // Display stdout
-                if (mainOutputText) {
-                    const stdoutElem = document.createElement('div');
-                    stdoutElem.textContent = mainOutputText;
-                    appendOutput(stdoutElem);
-                }
-
-                // Display stderr if present, possibly with a different style or indication
-                if (stderrText) {
-                    if (mainOutputText) { // Add a separator if stdout was also present
-                         const hr = document.createElement('hr');
-                         hr.className = 'output-separator';
-                         appendOutput(hr);
-                    }
-                    const stderrElem = document.createElement('div');
-                    stderrElem.innerHTML = `<strong>Standard Error:</strong>`; // Indicate it's stderr
-                    const stderrContent = document.createElement('pre'); // Use pre for formatting stderr too
-                    stderrContent.style.marginTop = "0.25rem";
-                    stderrContent.textContent = stderrText;
-                    // stderr might already be colored by the overall statusColorClass
-                    // If specific stderr styling is needed: stderrElem.classList.add('text-muted'); or 'text-error'
-                    stderrElem.appendChild(stderrContent);
-                    appendOutput(stderrElem);
-                }
+                const data = await response.json();
                 
-                // Separator before return code
-                const hrReturnCode = document.createElement('hr');
-                hrReturnCode.className = 'output-separator';
-                appendOutput(hrReturnCode);
+                // Use Marked.js to parse the AI output
+                const formattedOutput = marked.parse(data.stdout);
 
-                // Display Return Code
-                const returnCodeInfo = document.createElement('div');
-                const returnCodeColorClass = returnCode === 0 ? 'text-success' : 'text-warning';
-                returnCodeInfo.innerHTML = `Command finished with return code: <span class="${returnCodeColorClass}">${returnCode}</span>`;
-                appendOutput(returnCodeInfo);
-
-            } catch (error) {
-                console.error("Operation Error:", error); 
-                // Display the error message using the helper to ensure styling
-                setOutput(`Error: ${error.message}`, 'text-error');
-            } finally {
-                runBtn.disabled = false; 
-                // Scroll to bottom one last time in case content was added by appendOutput
-                outputArea.scrollTop = outputArea.scrollHeight; 
+                timeline.innerHTML += `
+                    <div class="timeline-item">
+                        <div class="log-card">
+                            <span class="tag tag-bot">Simulation: ${selectedTactic}</span>
+                            <div class="bot-output">${formattedOutput}</div>
+                        </div>
+                    </div>`;
+                
+                timeline.scrollTop = timeline.scrollHeight;
+            } catch (err) {
+                timeline.innerHTML += `<div class="timeline-item"><p style="color:red">Connection failed.</p></div>`;
             }
+        }
+
+        // Handle Enter Key
+        document.getElementById('user-input').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') submitQuery();
         });
     </script>
 </body>
