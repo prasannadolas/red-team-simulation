@@ -8,7 +8,7 @@ The system utilizes **Gemini 3 Flash** to simulate the "attacker's mindset," hel
 
 ---
 
-## 🚀 Features
+##  Features
 
 * **MITRE ATT&CK Alignment**: Automatically maps simulations to specific Tactic IDs and Techniques, including Reconnaissance (TA0043), Initial Access (TA0001), and Execution (TA0002).
 * **Unified Attack Orchestrator**: Features a "Full-Chain" mode that sequences multiple attack phases, passing context from one stage to the next to maintain logical consistency.
@@ -21,7 +21,7 @@ The system utilizes **Gemini 3 Flash** to simulate the "attacker's mindset," hel
 
 ---
 
-## 🏗️ System Architecture
+##  System Architecture
 
 The project is structured to ensure separation of concerns between AI logic, safety protocols, and the web interface:
 
@@ -35,15 +35,13 @@ The project is structured to ensure separation of concerns between AI logic, saf
 ---
 
 
-### 📂 Project Structure
+###  Project Structure
 
 ```text
 RED-TEAM-SIMULATION/
-├── __pycache__/                # Python bytecode cache files [cite: 1]
-├── labs-projects/              # Directory for experimental lab work or
-sub-projects
+├── __pycache__/                # Python bytecode cache files
+├── labs-projects/              # Directory for experimental lab work 
 ├── research-paper-presentation/# Documentation, slides, and research paper
-drafts
 ├── templates/                  # Frontend HTML assets
 │   └── index.html              # Main UI for the simulator
 ├── .env                        # Environment variables (API keys)
@@ -57,7 +55,7 @@ drafts
 
 ```
 
-## 🛠️ Installation & Setup
+##  Installation & Setup
 
 ### Prerequisites
 
@@ -100,7 +98,7 @@ The server will start at `http://localhost:5000`.
 
 ---
 
-## 🛡️ Ethical Use & Safety
+##  Ethical Use & Safety
 
 This tool is strictly for **educational and research purposes**. It is designed to help defenders identify weaknesses in infrastructure and human processes.
 
@@ -108,9 +106,3 @@ This tool is strictly for **educational and research purposes**. It is designed 
 * **Automated Redaction**: Integrated safety filters ensure that sensitive data is never exposed during a simulation.
 
 ---
-
-## 📄 License
-
-This project is developed as part of a cybersecurity research program. For further details on the underlying model, refer to the Google GenAI documentation.
-
-Would you like me to add a **"How it Works"** section that specifically details the logic of the `generate_full_attack_chain` function?
