@@ -1,4 +1,3 @@
-## README.md
 
 # Red Team Simulator: LLM-Driven Attack Orchestration Framework
 
