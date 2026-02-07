@@ -102,16 +102,18 @@
             timeline.scrollTop = timeline.scrollHeight;
 
             try {
-                const response = await fetch('/api/run', {
+                // CHANGED: Endpoint is now /simulate
+                const response = await fetch('/simulate', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ cmd: query, tactic: selectedTactic })
+                    // CHANGED: Body uses "prompt" to match app.py
+                    body: JSON.stringify({ prompt: query, tactic: selectedTactic, mode: 'single' })
                 });
                 
                 const data = await response.json();
                 
-                // Use Marked.js to parse the AI output
-                const formattedOutput = marked.parse(data.stdout);
+                // CHANGED: Access "data.data" instead of "data.stdout"
+                const formattedOutput = marked.parse(data.data);
 
                 timeline.innerHTML += `
                     <div class="timeline-item">
@@ -123,7 +125,8 @@
                 
                 timeline.scrollTop = timeline.scrollHeight;
             } catch (err) {
-                timeline.innerHTML += `<div class="timeline-item"><p style="color:red">Connection failed.</p></div>`;
+                console.error(err);
+                timeline.innerHTML += `<div class="timeline-item"><p style="color:red">Connection failed. Check console for details.</p></div>`;
             }
         }
 

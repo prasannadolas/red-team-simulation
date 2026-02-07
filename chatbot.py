@@ -37,6 +37,21 @@ def initialize_gemini_client():
         console.print(f"[bold red]🚨 Initialization failed:[/bold red] {str(e)}")
         sys.exit(1)
 
+# ─── Helper: Retry Logic ────────────────────────────────────────────────
+def retry_with_backoff(func, retries=3, delay=2):
+    """Retries a function if a 429 Resource Exhausted error occurs."""
+    for i in range(retries):
+        try:
+            return func()
+        except Exception as e:
+            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
+                wait_time = delay * (2 ** i) + random.uniform(0, 1)
+                console.print(f"[bold yellow]⚠️ Quota hit. Retrying in {wait_time:.1f}s...[/bold yellow]")
+                time.sleep(wait_time)
+            else:
+                raise e
+    raise Exception("Max retries exceeded for API.")
+
 # ─── Generate Gemini Response ───────────────────────────────────────────
 def generate_response(client, prompt, tactic):
     """Generates a single response for a specific tactic."""

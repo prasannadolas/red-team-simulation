@@ -1,63 +1,48 @@
-import os
-from flask import Flask, request, jsonify, render_template
-from jinja2 import TemplateNotFound
-from flask_cors import CORS
-import chatbot
+from flask import Flask, render_template, request, jsonify
 from chatbot import get_response
+from utils import validate_response
 
-# === Path Configuration ===
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+app = Flask(__name__)
 
-# === Sanity Checks (optional) ===
-print(f"▶️  Base directory: {BASE_DIR}")
-print(f"▶️  Templates directory: {TEMPLATES_DIR}")
-print(f"▶️  Root listing: {os.listdir(BASE_DIR)}")
-if os.path.isdir(TEMPLATES_DIR):
-    print(f"▶️  Template folder listing: {os.listdir(TEMPLATES_DIR)}")
-else:
-    print("❌  ERROR: 'templates' directory not found!")
-
-# === Flask App Initialization ===
-app = Flask(__name__, template_folder=TEMPLATES_DIR)
-CORS(app)  # Allow cross-origin requests if needed
-
-# === Routes ===
-@app.route('/', methods=['GET'])
+# ─── Routes ─────────────────────────────────────────────────────────────
+@app.route('/')
 def index():
-    """Serve the main HTML page."""
-    try:
-        return render_template('index.html')
-    except TemplateNotFound:
-        return (
-            "Template not found! Ensure 'templates/index.html' exists next to app.py.",
-            500
-        )
+    """
+    Renders the main simulation interface.
+    """
+    # This looks for 'index.html' inside the 'templates' folder
+    return render_template('index.html') 
 
-@app.route('/api/run', methods=['POST'])
-def run_cmd():
-    """Handle POST requests from the UI and return chatbot responses."""
-    data = request.get_json() or {}
-    cmd = data.get('cmd', '').strip()
-    if not cmd:
-        return jsonify({'error': 'No command provided'}), 400
-
+@app.route('/simulate', methods=['POST'])
+def simulate():
+    """
+    Endpoint for running attack simulations.
+    Expects JSON: {"prompt": "...", "mode": "full_chain" or "single"}
+    """
     try:
-        # Pass the UI input to your chatbot
-        bot_reply = get_response(cmd)
+        data = request.get_json()
+        
+        # Matches the keys sent by your new index.html
+        user_input = data.get("prompt", "")
+        mode = data.get("mode", "single")
+        tactic = data.get("tactic", "recon_gatherer")
+
+        # Get response from chatbot orchestrator
+        raw_output = get_response(user_input, mode=mode, tactic=tactic)
+
+        # Sanitize and validate before returning
+        if isinstance(raw_output, dict):
+            final_output = {k: validate_response(v) for k, v in raw_output.items()}
+        else:
+            final_output = validate_response(raw_output)
+
         return jsonify({
-            'stdout': bot_reply,
-            'stderr': '',
-            'returncode': 0
+            "status": "success",
+            "data": final_output 
         })
-    except Exception as e:
-        return jsonify({
-            'stdout': '',
-            'stderr': str(e),
-            'returncode': 1
-        }), 500
 
-# === Entry Point ===
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 if __name__ == '__main__':
-    # debug=True for development; disable in production
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='127.0.0.1', port=5000, debug=True)
