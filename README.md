@@ -40,7 +40,7 @@ The project is structured to ensure separation of concerns between AI logic, saf
 RED-TEAM-SIMULATION/
 ├── __pycache__/                # Python bytecode cache files
 ├── labs-projects/              # Directory for experimental lab work 
-├── research-paper-presentation/# Documentation, slides, and research paper
+├── research-papers/            # Documentation, slides, and research paper
 ├── templates/                  # Frontend HTML assets
 │   └── index.html              # Main UI for the simulator
 ├── .env                        # Environment variables (API keys)
